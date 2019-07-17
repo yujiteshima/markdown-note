@@ -157,3 +157,175 @@ let binary: number = 0b0000
 let octal: number = 0o123
 ```
 
+### string型
+JavaScriptプログラミングでもっとも基本的な処理は、テキストデータを扱う事である。他の言語と同様に、文字列を扱うためにString型を使用する。JavaScriptと同様に、文字列データを二重引用符、一重引用符、またはバッククォートで囲う。
+
+```ts
+let color: string = "white";
+color = 'black';
+let myColor: string = `my color is ${color}`
+```
+
+## ReactでTypeScriptを使う利点
+
+reactでは、コーディングにJavaScriptの拡張構文であるJSXを使用する。TypeScriptでは、JSXを記述する場合、拡張子を「.tsx」としてファイルを作成する。
+純関数とHTMLテンプレートが入り混じったJSXでは、型はどのように開発をサポートするのであろうか？本節では、ReactがTypeScriptの恩恵を享受するシーンを確認する。
+JSX(TSX)が、型システムと親和性が高いことが納得できる。
+
+
+### 最小限のReact開発環境(Partcel編)
+```
+$npm i react react-do
+
+$npm i -D @types/react @types/react-dom parcel-bundler
+```
+
+- tscコマンドなどで作成した`tsconfig.json`の`compilerOptions`に`"jsx": "react"`を追加する。
+- ReactやTypeScriptのビルド設定は、これだけである。
+
+```js
+// tsconfig.json
+"compilerOption": {
+  ...
+  "jsx": "react"
+}
+```
+
+エントリーポイントになるHTMLファイルに「`<script src="./app.tsc"></script>`」と記述する。
+
+```html
+// index.html
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="./app.tsc"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+```
+
+```js
+// app.tsx
+import * as React from 'react'
+import { render } from 'react-dom'
+render(<div>Hello world!</div>, document.getElementById('app'))
+```
+
+```
+$ npx parcel index.html
+```
+
+### 最小限のReact開発環境（create-react-app編）
+
+```
+$ npm i -g create-react-app
+
+$ create-react-app hello-world --typescript
+```
+
+```
+|-node_modules
+|-public
+|   |-favicon.ico
+|   |-index.html
+|   |-manifest.json
+|
+|-src
+|   |-App.css
+|   |-App.test.tsx
+|   |-App.tsx
+|   |-index.css
+|   |-index.tsx
+|   |-logo.svg
+|   |-react-app-env.d.ts
+|   |-serviceWorker.ts
+|
+|-.gitignore
+|-package.json
+|-README.md
+|-tsconfig.json
+|-yarn.lock
+```
+
+```
+$ yarn start
+```
+
+### 目指すマークアップ出力
+
+```html
+<div>
+  <div>
+    <h1>健康意識に関する調査結果</h1>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>対象世代</th>
+        <th>十分に取り組んでいる</th>
+        <th>近いうちに取り組みたい</th>
+        <th>取り組んでいない</th>
+        <th>必要ない</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>20~30歳</th>
+        <td>18%</td>
+        <td>22%</td>
+        <td>37%</td>
+        <td>23%</td>
+      </tr>
+      <tr>
+        <th>30~40歳</th>
+        <td>12%</td>
+        <td>28%</td>
+        <td>42%</td>
+        <td>18%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+### データ型を定義する
+
+コンポーネントの開発は、表示するデータ型の考察から始まる。実際にWebアプリケーションのフロントエンドの実装では、APIでデータを取得し、それを表示するという作業が大半を占める。
+ここでは解説の為、モックデータを`data.ts`で定義し、表示する。配列がテーブルの行、オブジェクトが列として利用するデータと捉えるとわかりやすい。
+
+```ts
+// data.ts
+export const rows = [
+  {
+    id: 'up20-un30',
+    generation: '20~30歳',
+    answers: [0.18, 0.22, 0.37, 0.23]
+  },
+  {
+    id: 'up30-un40',
+    generation: '30~40歳',
+    answers: [0.12, 0.28, 0.42, 0.18]
+  }
+]
+```
+
+このデータに対して型を付与すると、以下のようになる。
+```ts
+export type Row = {
+  id: string
+  genaration: string
+  answers: number[]
+}
+export type Rows = Row[]
+```
+
+このRows型をモックデータにアノテーションで付与する。Row型と異なるオブジェクトを含んだ場合、コンパイルエラーが得られる事を確認できる。
+
+```ts
+export const row: Rows = [ // アノテーションで付与
+
+]
+```

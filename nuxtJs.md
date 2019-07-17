@@ -293,6 +293,39 @@ VuexストアのデータをmapGetters/mapActionsなどで引き回している�
       return { user, items}
     }
   }
-  
+
 </script>
 ```
+
+## layout機能
+
+### レイアウトファイル設計のベストプラクティス
+
+トップページにはログインページであったり、ダッシュボードのサマリーページであったり、他のページとは大きく異なるデザインを適用することがほとんどである。
+そういったときにdefault.vueをトップページ用に、それぞれのページをhoge.vueなどとした場合、全てのページコンポーネントに対して```layout: 'single'```を指定する必要があり、適用忘れなどのミスの原因になる。
+
+## Nuxt.jsのライフサイクル
+
+```
+start
+|
+nuxtServerInit
+|
+middleware
+|-1. nuxt.config.js
+|-2. matching layout
+|-3. matiching page & children
+validate()
+|
+asyncData() & fetch()
+|
+Render
+|
+|-nuxt-link-> middlewareに戻る
+```
+
+## Vuexのモジュールモードを活用したオートローディング
+
+クラシックモードでは、自身でVuexを読み込み、ストアインスタンスを生成する形でVuexストアを構築していた。
+対して、モジュールモードでは、開発者は規約に沿って記述し、適切にexportを行うだけで、***Nuxt.jsが自動的に名前空間付きのモジュールとして解釈して***、Vuexストアインスタンスの生成を行う。
+
